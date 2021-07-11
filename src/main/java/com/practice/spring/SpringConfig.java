@@ -12,20 +12,14 @@ import com.practice.spring.service.MemberService;
 
 @Configuration
 public class SpringConfig {
-	private EntityManager em;
-	
-	@Autowired
-	public SpringConfig(EntityManager em) {
-		this.em = em;
+	// 자동으로 repository 를 찾음. 
+	private final MemberRepository memberRepository;
+	public SpringConfig(MemberRepository memberRepository) {
+		this.memberRepository = memberRepository;
 	}
 	
 	@Bean
 	public MemberService memberService() {
-		return new MemberService(memberRepository());
-	}
-	
-	@Bean
-	public MemberRepository memberRepository() {
-		return new JpaMemberRepository(em); 
+		return new MemberService(memberRepository);
 	}
 }
