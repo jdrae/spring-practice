@@ -10,5 +10,5 @@ spring:
     jpa:
         database: mysql
         database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
-        generate-ddl: false
+        generate-ddl-auto: null
         show-sql: true
