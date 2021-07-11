@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 import com.practice.spring.domain.Member;
 
 public class MemoryMemberRepositoryTest {
-	MemberRepository repository = new MemoryMemberRepository();
+	MemoryMemberRepository repository = new MemoryMemberRepository();
 	
 	@AfterEach
 	public void afterEach() {

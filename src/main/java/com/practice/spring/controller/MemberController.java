@@ -19,7 +19,7 @@ public class MemberController{
 	
 	private final MemberService memberService;
 	
-	@ Autowired
+	@ Autowired // 주입에는 필드 주입, 생성자 주입, 세터 주입이 있다
 	public MemberController(MemberService memberService) {
 		this.memberService = memberService;
 	}
