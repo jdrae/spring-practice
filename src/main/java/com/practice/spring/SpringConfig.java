@@ -1,19 +1,19 @@
 package com.practice.spring;
 
-import javax.persistence.EntityManager;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import com.practice.spring.repository.JpaMemberRepository;
+import com.practice.spring.aop.TimeTraceAop;
 import com.practice.spring.repository.MemberRepository;
 import com.practice.spring.service.MemberService;
 
 @Configuration
 public class SpringConfig {
-	// ÀÚµ¿À¸·Î repository ¸¦ Ã£À½. 
+	// ï¿½Úµï¿½ï¿½ï¿½ï¿½ï¿½ repository ï¿½ï¿½ Ã£ï¿½ï¿½. 
 	private final MemberRepository memberRepository;
+	
+	@Autowired
 	public SpringConfig(MemberRepository memberRepository) {
 		this.memberRepository = memberRepository;
 	}
@@ -22,4 +22,5 @@ public class SpringConfig {
 	public MemberService memberService() {
 		return new MemberService(memberRepository);
 	}
+	
 }
