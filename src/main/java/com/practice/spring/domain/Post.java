@@ -28,6 +28,12 @@ public class Post{
 		this.content = content;
 		this.author = author;
 	}
+	
+	// arg 를 받는 생성자가 있으면
+	// 꼭 기본생성자 추가: No default constructor for entity
+	// 또는 @NoArgsConstructor 추가
+	protected Post() {
+	}
 
 	// setter 로 사용하기보다 값을 변경하려는 이유가 적힌 메소드를 생성하고 수정
 	// ex. updateTitle() 에서 title 수정

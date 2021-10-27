@@ -6,14 +6,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import com.practice.spring.domain.Post;
 
-@RunWith(SpringRunner.class)
 @SpringBootTest
 public class PostRepositoryTest {
 	@Autowired
@@ -34,6 +32,7 @@ public class PostRepositoryTest {
 		List<Post> postList = postRepository.findAll();
 		// then: 테스트 검증
 		Post post = postList.get(0);
+		System.out.println(post.getTitle() + post.getContent());
 		assertThat(post.getTitle()).isEqualTo("test title");
 		assertThat(post.getContent()).isEqualTo("test contents");
 	}
