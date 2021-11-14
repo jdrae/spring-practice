@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Entity // 테이블과 링크될 클래스(언더스코어 네이밍)
-public class Post{
+public class Post extends BaseTimeEntity{
 	@Id // pk
 	@GeneratedValue // pk 생성규칙. 기본 auto_increment
 	private Long id;

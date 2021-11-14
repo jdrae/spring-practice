@@ -1,5 +1,6 @@
 package com.practice.spring.repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -36,9 +37,26 @@ public class PostRepositoryTest {
 		// when: 테스트 행위 선언
 		List<Post> postList = postRepository.findAll();
 		// then: 테스트 검증
-		Post post = postList.get(0); // 첫번째 레코드. 이미 값이 있으면 에러
+		Post post = postList.get(postList.size() - 1);
 		System.out.println(post.getTitle() + post.getContent());
 		assertThat(post.getTitle()).isEqualTo("test title");
 		assertThat(post.getContent()).isEqualTo("test contents");
+	}
+	
+	@Test
+	public void BaseTimeEntity_등록() {
+		// given
+		LocalDateTime now = LocalDateTime.now();
+		postRepository.save(Post.builder()
+				.title("test title")
+				.content("test contents")
+				.author("test author")
+				.build());
+		// when
+		List<Post> postList = postRepository.findAll();
+		// then
+		Post post = postList.get(postList.size() - 1);
+		assertThat(post.getCreatedDate()).isAfterOrEqualTo(now);
+		assertThat(post.getModifiedDate()).isAfterOrEqualTo(now);
 	}
 }
