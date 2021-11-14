@@ -27,11 +27,16 @@ public class PostRepositoryTest {
 	public void 게시글저장_불러오기() {
 		// BDD: behavior driven development
 		// given: 테스트 환경 구축
-		postRepository.save(new Post("test title","test contents","testauthor"));
+		//postRepository.save(new Post("test title","test contents","testauthor"));
+		postRepository.save(Post.builder()
+				.title("test title")
+				.content("test contents")
+				.author("test author")
+				.build());
 		// when: 테스트 행위 선언
 		List<Post> postList = postRepository.findAll();
 		// then: 테스트 검증
-		Post post = postList.get(0);
+		Post post = postList.get(0); // 첫번째 레코드. 이미 값이 있으면 에러
 		System.out.println(post.getTitle() + post.getContent());
 		assertThat(post.getTitle()).isEqualTo("test title");
 		assertThat(post.getContent()).isEqualTo("test contents");
