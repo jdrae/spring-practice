@@ -8,5 +8,4 @@
 
 > 이하 내용은 유료 강의이기 때문에 코드 저작권 이슈로 private 레포지토리에 학습 과정 커밋.
 
-* [스프링 MVC 1편 - 백엔드 웹 개발 핵심 기술](https://www.inflearn.com/course/%EC%8A%A4%ED%94%84%EB%A7%81-mvc-1/dashboard)
-
+* [스프링 MVC 1편 - 백엔드 웹 개발 핵심 기술](https://www.inflearn.com/course/%EC%8A%A4%ED%94%84%EB%A7%81-mvc-1/dashboard) | [수료증](https://github.com/jdrae/spring-practice/blob/master/certificate/mvc.png)
