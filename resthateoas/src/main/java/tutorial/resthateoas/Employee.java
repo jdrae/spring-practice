@@ -14,8 +14,19 @@ import java.util.Objects;
 public class Employee {
 
     private @Id @GeneratedValue Long id;
-    private @NonNull String name;
+    private @NonNull String firstName;
+    private @NonNull String lastName;
     private @NonNull String role;
+
+    public String getName(){
+        return this.firstName + " " + this.lastName;
+    }
+
+    public void setName(String name){
+        String[] parts = name.split(" ");
+        this.firstName = parts[0];
+        this.lastName = parts[1];
+    }
 
     @Override
     public boolean equals(Object o){
@@ -25,17 +36,18 @@ public class Employee {
             return false;
         Employee employee = (Employee) o;
         return Objects.equals(this.id, employee.id) &&
-                Objects.equals(this.name, employee.name) &&
+                Objects.equals(this.firstName, employee.firstName) &&
+                Objects.equals(this.lastName, employee.lastName) &&
                 Objects.equals(this.role, employee.role);
     }
 
     @Override
     public int hashCode(){
-        return Objects.hash(this.id, this.name, this.role);
+        return Objects.hash(this.id, this.firstName, this.lastName, this.role);
     }
 
     @Override
     public String toString(){
-        return String.format("Employee[id=%d, name=%s, role=%s]", id, name, role);
+        return String.format("Employee[id=%d, firstname=%s, lastname=%s, role=%s]", id, firstName, lastName, role);
     }
 }
