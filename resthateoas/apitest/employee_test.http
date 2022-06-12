@@ -1,0 +1,38 @@
+GET http://localhost:8080/employees
+Accept: application/json
+
+### curl -v localhost:8080/employees/3 | json_pp
+GET http://localhost:8080/employees/3
+Accept: application/json
+
+###
+POST http://localhost:8080/employees
+Content-Type: application/json
+
+{
+  "name": "Darae Jang",
+  "role": "developer"
+}
+
+###
+GET http://localhost:8080/employees/1
+Accept: application/json
+
+###
+PUT http://localhost:8080/employees/1
+Content-Type: application/json
+
+{
+  "name": "Darae Jang",
+  "role": "CEO"
+}
+
+
+###
+GET http://localhost:8080/employees/1
+Accept: application/json
+
+
+###
+DELETE http://localhost:8080/employees/1
+Content-Type: application/json
