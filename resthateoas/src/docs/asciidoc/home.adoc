@@ -1,0 +1,18 @@
+= Spring REST Docs
+:toc: left
+:toclevels: 2
+:sectlinks:
+
+[[resources-post]]
+== Home
+
+[[resources-post-create]]
+=== Home 요청
+
+==== HTTP request
+
+include::{snippets}/home/http-request.adoc[]
+
+==== HTTP response
+
+include::{snippets}/home/http-response.adoc[]

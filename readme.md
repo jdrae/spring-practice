@@ -9,6 +9,10 @@
 
     * [Accessing Data with JPA](https://spring.io/guides/gs/accessing-data-jpa/)
     * [Accessing data with MySQL](https://spring.io/guides/gs/accessing-data-mysql/)
+* /resthateoas
+    * [Building REST services with Spring](https://spring.io/guides/tutorials/rest/)
+    * [Creating API Documentation with Restdocs](https://spring.io/guides/gs/testing-restdocs/)
+
 
 ## spring-class
 https://github.com/jdrae/spring-class
@@ -20,5 +24,5 @@ https://github.com/jdrae/spring-class
     * [수료증](https://github.com/jdrae/spring-practice/blob/master/certificate/mvc.png)
 
 * [실전! 스프링 부트와 JPA 활용1 - 웹 애플리케이션 개발](https://www.inflearn.com/course/%EC%8A%A4%ED%94%84%EB%A7%81%EB%B6%80%ED%8A%B8-JPA-%ED%99%9C%EC%9A%A9-1/dashboard) 
-    
+  
     * [수료증](https://github.com/jdrae/spring-practice/blob/master/certificate/jpa.png)
