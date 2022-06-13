@@ -1,6 +1,5 @@
 package tutorial.resthateoas;
 
-import org.apache.coyote.Response;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.IanaLinkRelations;
