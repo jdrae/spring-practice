@@ -5,12 +5,17 @@ spring:
     username: springuser
     password: ThePassword
 
+  sql:
+    init:
+      mode: always
+
   jpa:
     hibernate:
       ddl-auto: create
     properties:
       hibernate:
         format_sql: true
+    defer-datasource-initialization: true
 
 logging:
   level:

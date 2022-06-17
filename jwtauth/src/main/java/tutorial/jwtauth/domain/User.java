@@ -12,7 +12,7 @@ import java.util.Set;
 @NoArgsConstructor
 public class User {
 
-    @Id @GeneratedValue
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @JsonIgnore private Long userId;
 
     @Column(length=30, unique=true)
