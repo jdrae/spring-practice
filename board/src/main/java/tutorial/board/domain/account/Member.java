@@ -2,9 +2,10 @@ package tutorial.board.domain.account;
 
 import lombok.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import tutorial.board.util.BaseTimeEntity;
+import tutorial.board.domain.BaseTimeEntity;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -32,6 +33,14 @@ public class Member extends BaseTimeEntity {
     // orphanRemoval: Member가 제거되거나 연관 관계가 끊어져서 MemberRole이 고아 객체가 되었을 때, MemberRole 제거
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<MemberRole> roles;
+
+    public String[] getRolesInString() {
+        ArrayList<String> string_roles = new ArrayList<String>();
+        for (MemberRole role : roles){
+            string_roles.add(role.getRole().getRoleType().toString());
+        }
+        return string_roles.toArray(new String[string_roles.size()]);
+    }
 
     //== 생성자 ==//
     @Builder

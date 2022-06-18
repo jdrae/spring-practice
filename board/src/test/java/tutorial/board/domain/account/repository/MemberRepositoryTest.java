@@ -113,7 +113,7 @@ class MemberRepositoryTest {
         assertThat(updatedMember.getNickname()).isEqualTo(updateNickname);
         assertThat(updatedMember.getNickname()).isNotEqualTo(member.getNickname());
 
-        assertThat(passwordEncoder.matches(updatedMember.getPassword(), updatePassword)).isTrue();
+        assertThat(passwordEncoder.matches(updatePassword, updatedMember.getPassword())).isTrue();
     }
 
     @Test
