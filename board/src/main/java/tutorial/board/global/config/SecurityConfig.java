@@ -13,8 +13,11 @@ import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
+import tutorial.board.domain.account.repository.MemberRepository;
 import tutorial.board.domain.account.service.LoginService;
+import tutorial.board.global.jwt.JwtService;
 import tutorial.board.global.login.filter.JsonUsernamePasswordAuthenticationFilter;
+import tutorial.board.global.login.filter.JwtAuthenticationProcessingFilter;
 import tutorial.board.global.login.handler.LoginFailureHandler;
 import tutorial.board.global.login.handler.LoginSuccessJWTProvideHandler;
 
@@ -25,6 +28,8 @@ public class SecurityConfig{
 
     private final LoginService loginService;
     private final ObjectMapper objectMapper;
+    private final MemberRepository memberRepository;
+    private final JwtService jwtService;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -39,7 +44,10 @@ public class SecurityConfig{
                 .antMatchers("/login", "/signup","/").permitAll()
                 .anyRequest().authenticated();
 
-        http.addFilterAfter(jsonUsernamePasswordAuthenticationFilter(), LogoutFilter.class); // ??
+        // LogoutFilter 다음에 추가
+        http.addFilterAfter(jsonUsernamePasswordAuthenticationFilter(), LogoutFilter.class);
+        // JsonUsername..Filter 이전에 추가
+        http.addFilterBefore(jwtAuthenticationProcessingFilter(), JsonUsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
@@ -65,7 +73,7 @@ public class SecurityConfig{
 
     @Bean
     public LoginSuccessJWTProvideHandler loginSuccessJWTProvideHandler(){
-        return new LoginSuccessJWTProvideHandler();
+        return new LoginSuccessJWTProvideHandler(jwtService, memberRepository);
     }
 
     @Bean
@@ -83,4 +91,10 @@ public class SecurityConfig{
         return jsonUsernamePasswordAuthenticationFilter;
     }
 
+    @Bean
+    public JwtAuthenticationProcessingFilter jwtAuthenticationProcessingFilter(){
+        JwtAuthenticationProcessingFilter jsonUsernamePasswordLoginFilter = new JwtAuthenticationProcessingFilter(jwtService, memberRepository);
+
+        return jsonUsernamePasswordLoginFilter;
+    }
 }

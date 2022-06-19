@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
@@ -50,6 +51,10 @@ public class LoginTest {
 
     private static String LOGIN_URL = "/login";
 
+    @Value("${jwt.access.header}")
+    private String accessHeader;
+    @Value("${jwt.refresh.header}")
+    private String refreshHeader;
 
     private void clear(){
         em.flush();
@@ -93,7 +98,8 @@ public class LoginTest {
                 .andReturn();
 
         //then
-        assertThat(result.getResponse().getContentAsString()).isEqualTo("success");
+        assertThat(result.getResponse().getHeader(accessHeader)).isNotNull();
+        assertThat(result.getResponse().getHeader(refreshHeader)).isNotNull();
     }
 
     @Test
@@ -108,7 +114,8 @@ public class LoginTest {
                 .andReturn();
 
         //then
-        assertThat(result.getResponse().getContentAsString()).isEqualTo("fail");
+        assertThat(result.getResponse().getHeader(accessHeader)).isNull();
+        assertThat(result.getResponse().getHeader(refreshHeader)).isNull();
     }
 
     @Test
@@ -123,7 +130,8 @@ public class LoginTest {
                 .andReturn();
 
         //then
-        assertThat(result.getResponse().getContentAsString()).isEqualTo("fail");
+        assertThat(result.getResponse().getHeader(accessHeader)).isNull();
+        assertThat(result.getResponse().getHeader(refreshHeader)).isNull();
     }
 
     @Test
@@ -149,7 +157,7 @@ public class LoginTest {
         //then
         perform(LOGIN_URL, APPLICATION_FORM_URLENCODED, map)
                 .andDo(print())
-                .andExpect(status().isBadRequest())
+                .andExpect(status().isBadRequest()) // 401 isUnauthorized ?
                 .andReturn();
     }
 

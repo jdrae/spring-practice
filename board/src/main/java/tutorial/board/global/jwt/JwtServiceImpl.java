@@ -128,6 +128,7 @@ public class JwtServiceImpl implements JwtService{
     @Override
     public Optional<String> extractRefreshToken(HttpServletRequest request) throws IOException, ServletException {
         return Optional.ofNullable(request.getHeader(refreshHeader))
+                .filter(accessToken -> accessToken.startsWith(BEARER))
                 .map(refreshToken -> refreshToken.replace(BEARER, ""));
     }
 
