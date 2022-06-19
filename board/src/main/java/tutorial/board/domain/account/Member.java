@@ -37,14 +37,6 @@ public class Member extends BaseTimeEntity {
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<MemberRole> roles;
 
-    public String[] getRolesInString() {
-        ArrayList<String> string_roles = new ArrayList<String>();
-        for (MemberRole role : roles){
-            string_roles.add(role.getRole().getRoleType().toString());
-        }
-        return string_roles.toArray(new String[string_roles.size()]);
-    }
-
     //== 생성자 ==//
     @Builder
     public Member(Long id, String username, String password, String nickname, List<Role> roles) {
@@ -76,4 +68,23 @@ public class Member extends BaseTimeEntity {
         this.password = passwordEncoder.encode(password);
     }
 
+    public boolean matchPassword(PasswordEncoder passwordEncoder, String checkPassword){
+        return passwordEncoder.matches(checkPassword, this.getPassword());
+    }
+
+    //== ROLE 관련 ==//
+    public String[] getRolesInString() {
+        ArrayList<String> string_roles = new ArrayList<String>();
+        for (MemberRole role : roles){
+            string_roles.add(role.getRole().getRoleType().toString());
+        }
+        return string_roles.toArray(new String[string_roles.size()]);
+    }
+
+    //== toString ==//
+
+    @Override
+    public String toString() {
+        return username + ":" + nickname;
+    }
 }
