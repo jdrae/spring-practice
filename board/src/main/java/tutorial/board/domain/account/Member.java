@@ -29,6 +29,9 @@ public class Member extends BaseTimeEntity {
     @Column(nullable = false, length = 30)
     private String nickname;
 
+    @Column(length = 1000)
+    private String refreshToken;
+
     // cascade.ALL: 연쇄적으로 저장되거나 제거될 수 있도록
     // orphanRemoval: Member가 제거되거나 연관 관계가 끊어져서 MemberRole이 고아 객체가 되었을 때, MemberRole 제거
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -58,6 +61,14 @@ public class Member extends BaseTimeEntity {
 
     public void updateNickname(String nickname){
         this.nickname = nickname;
+    }
+
+    public void updateRefreshToken(String refreshToken){
+        this.refreshToken = refreshToken;
+    }
+
+    public void destroyRefreshToken(){
+        this.refreshToken = null;
     }
 
     //== 패스워드 암호화 ==//

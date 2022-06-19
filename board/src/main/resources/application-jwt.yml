@@ -1,0 +1,11 @@
+jwt:
+  # echo 'darae-jang-spring-boot-jwt-tutorial-secret-key'|base64
+  secret: ZGFyYWUtamFuZy1zcHJpbmctYm9vdC1qd3QtdHV0b3JpYWwtc2VjcmV0LWtleQ==
+
+  access:
+    expiration: 120 # seconds
+    header: Authorization
+
+  refresh:
+    expiration: 180
+    header: Authorization-refresh
