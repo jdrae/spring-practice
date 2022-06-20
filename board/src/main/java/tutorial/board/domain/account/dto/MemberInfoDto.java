@@ -2,13 +2,15 @@ package tutorial.board.domain.account.dto;
 
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import tutorial.board.domain.account.Member;
 
 @Data //getter & setter
+@NoArgsConstructor
 public class MemberInfoDto {
 
-    private final String username;
-    private final String nickname;
+    private String username;
+    private String nickname;
 
     @Builder
     public MemberInfoDto(Member member){

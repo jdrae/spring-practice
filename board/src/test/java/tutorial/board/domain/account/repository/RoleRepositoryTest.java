@@ -21,7 +21,7 @@ class RoleRepositoryTest {
     @PersistenceContext EntityManager em;
 
     private Role createRole() {
-        return new Role(RoleType.ROLE_USER);
+        return new Role(RoleType.USER);
     }
 
     private void clear() {

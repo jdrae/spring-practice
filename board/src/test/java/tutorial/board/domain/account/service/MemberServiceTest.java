@@ -64,7 +64,7 @@ class MemberServiceTest {
 
     @BeforeEach
     public void setDefaultRole(){
-        Role defaultRole = new Role(RoleType.ROLE_USER);
+        Role defaultRole = new Role(RoleType.USER);
         roleRepository.save(defaultRole);
         clear();;
     }
@@ -89,7 +89,7 @@ class MemberServiceTest {
         assertThat(member.getId()).isNotNull();
         assertThat(member.getUsername()).isEqualTo(memberSignUpDto.getUsername());
         assertThat(member.getNickname()).isEqualTo(memberSignUpDto.getNickname());
-        assertThat(member.getRolesInString()[0]).isEqualTo("ROLE_USER");
+        assertThat(member.getRolesInString()[0]).isEqualTo("USER");
     }
 
     @Test

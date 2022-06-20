@@ -28,7 +28,7 @@ public class MemberServiceImpl implements MemberService{
     @Override
     public void signUp(MemberSignUpDto memberSignUpDto) throws Exception {
         // 기본 권한 설정
-        Role role = roleRepository.findByRoleType(RoleType.ROLE_USER)
+        Role role = roleRepository.findByRoleType(RoleType.USER)
                 .orElseThrow(() -> new Exception());
 
         Member member = memberSignUpDto.toEntity(List.of(role));

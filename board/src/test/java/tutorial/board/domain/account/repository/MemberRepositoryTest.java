@@ -230,7 +230,7 @@ class MemberRepositoryTest {
     }
 
     private List<Role> createRoles(){
-        List<RoleType> roleTypes = List.of(RoleType.ROLE_ADMIN, RoleType.ROLE_USER);
+        List<RoleType> roleTypes = List.of(RoleType.ADMIN, RoleType.USER);
         List<Role> roles = roleTypes.stream()
                 .map(roleType -> new Role(roleType)).collect(Collectors.toList());
         return roles;
