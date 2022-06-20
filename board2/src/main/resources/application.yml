@@ -1,0 +1,29 @@
+spring:
+  profiles:
+    include: jwt # application-jwt ? ???? properties ?? yml ??? ????.
+
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/db_example?allowPublicKeyRetrieval=true&useSSL=false&useUnicode=true&serverTimezone=Asia/Seoul
+    username: springuser
+    password: ThePassword
+
+  sql:
+    init:
+      mode: always
+
+  jpa:
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        format_sql: true
+    defer-datasource-initialization: true
+
+logging:
+  level:
+    org.hibernate.SQL: debug
+    org.hibernate.type: debug
+    org.springframework.boot.autoconfigure: info
+    org.apache.coyote.http11: debug
+    tutorial.board2: debug
