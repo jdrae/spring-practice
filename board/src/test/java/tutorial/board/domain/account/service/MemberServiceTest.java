@@ -16,8 +16,11 @@ import tutorial.board.domain.account.Member;
 import tutorial.board.domain.account.Role;
 import tutorial.board.domain.account.RoleType;
 import tutorial.board.domain.account.dto.*;
+import tutorial.board.domain.account.exception.MemberException;
+import tutorial.board.domain.account.exception.MemberExceptionType;
 import tutorial.board.domain.account.repository.MemberRepository;
 import tutorial.board.domain.account.repository.RoleRepository;
+import tutorial.board.global.exception.BaseException;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -85,7 +88,7 @@ class MemberServiceTest {
 
         //then
         Member member = memberRepository.findByUsername(memberSignUpDto.getUsername())
-                .orElseThrow(() -> new Exception());
+                .orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
         assertThat(member.getId()).isNotNull();
         assertThat(member.getUsername()).isEqualTo(memberSignUpDto.getUsername());
         assertThat(member.getNickname()).isEqualTo(memberSignUpDto.getNickname());
@@ -101,9 +104,9 @@ class MemberServiceTest {
 
         //then
         assertThat(
-                assertThrows(Exception.class,
-                        () -> memberService.signUp(memberSignUpDto)).getMessage())
-                .isEqualTo("이미 존재하는 아이디입니다.");
+                assertThrows(BaseException.class,
+                        () -> memberService.signUp(memberSignUpDto)).getExceptionType())
+                .isEqualTo(MemberExceptionType.ALREADY_EXIST_USERNAME);
     }
 
     @Test
@@ -135,7 +138,7 @@ class MemberServiceTest {
 
         // then
         Member member = memberRepository.findByUsername(memberSignUpDto.getUsername())
-                .orElseThrow(() -> new Exception());
+                .orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
         assertThat(member.matchPassword(passwordEncoder, updatePassword)).isTrue();
     }
 
@@ -147,10 +150,10 @@ class MemberServiceTest {
 
         // then
         assertThat(
-                assertThrows(Exception.class,
+                assertThrows(BaseException.class,
                         ()-> memberService.updatePassword(PASSWORD + "1", updatePassword))
-                        .getMessage())
-                .isEqualTo("비밀번호가 일치하지 않습니다.");
+                        .getExceptionType())
+                .isEqualTo(MemberExceptionType.WRONG_PASSWORD);
     }
 
     @Test
@@ -163,11 +166,11 @@ class MemberServiceTest {
 
         //then
         assertThat(
-                assertThrows(Exception.class,
+                assertThrows(BaseException.class,
                         ()-> memberRepository.findByUsername(memberSignUpDto.getUsername())
-                                .orElseThrow(() -> new Exception("회원이 없습니다")))
-                        .getMessage())
-                .isEqualTo("회원이 없습니다");
+                                .orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER)))
+                        .getExceptionType())
+                .isEqualTo(MemberExceptionType.NOT_FOUND_MEMBER);
     }
 
     @Test
@@ -177,17 +180,17 @@ class MemberServiceTest {
 
         //then
         assertThat(
-                assertThrows(Exception.class,
+                assertThrows(BaseException.class,
                         ()-> memberService.withdraw(PASSWORD + "1"))
-                        .getMessage())
-                .isEqualTo("비밀번호가 일치하지 않습니다.");
+                        .getExceptionType())
+                .isEqualTo(MemberExceptionType.WRONG_PASSWORD);
     }
     @Test
     void getInfo() throws Exception {
         //given
         MemberSignUpDto memberSignUpDto = setMember();
         Member member = memberRepository.findByUsername(memberSignUpDto.getUsername())
-                .orElseThrow(() -> new Exception());
+                .orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
         clear();
 
         //when

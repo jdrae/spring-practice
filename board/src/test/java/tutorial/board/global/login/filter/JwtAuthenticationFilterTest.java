@@ -292,7 +292,7 @@ class JwtAuthenticationFilterTest {
         mockMvc.perform(post(LOGIN_URL)  //post 의 경우 /login 은 필터 통과 안되기 때문에 로그인 실패
                         .header(refreshHeader, BEARER + refreshToken)
                         .header(accessHeader, BEARER + accessToken))
-                .andExpect(status().isUnauthorized()) // 로그인 실패
+                .andExpect(status().isBadRequest()) // 로그인 실패
                 .andReturn();
     }
 

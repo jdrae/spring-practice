@@ -110,7 +110,7 @@ public class LoginTest {
         //when
         MvcResult result = perform(LOGIN_URL, APPLICATION_JSON, map)
                 .andDo(print())
-                .andExpect(status().isUnauthorized())
+                .andExpect(status().isBadRequest())
                 .andReturn();
 
         //then
@@ -126,7 +126,7 @@ public class LoginTest {
         //when
         MvcResult result = perform(LOGIN_URL, APPLICATION_JSON, map)
                 .andDo(print())
-                .andExpect(status().isUnauthorized())
+                .andExpect(status().isBadRequest())
                 .andReturn();
 
         //then

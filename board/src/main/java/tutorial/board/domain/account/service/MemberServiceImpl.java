@@ -10,6 +10,7 @@ import tutorial.board.domain.account.RoleType;
 import tutorial.board.domain.account.dto.MemberInfoDto;
 import tutorial.board.domain.account.dto.MemberSignUpDto;
 import tutorial.board.domain.account.dto.MemberUpdateDto;
+import tutorial.board.domain.account.exception.*;
 import tutorial.board.domain.account.repository.MemberRepository;
 import tutorial.board.domain.account.repository.RoleRepository;
 import tutorial.board.global.util.SecurityUtil;
@@ -35,55 +36,55 @@ public class MemberServiceImpl implements MemberService{
         member.encodePassword(passwordEncoder);
 
         if(memberRepository.findByUsername(member.getUsername()).isPresent()){
-            throw new Exception("이미 존재하는 아이디입니다.");
+            throw new MemberException(MemberExceptionType.ALREADY_EXIST_USERNAME);
         }
         memberRepository.save(member);
     }
 
     @Override
-    public void update(MemberUpdateDto memberUpdateDto) throws Exception {
+    public void update(MemberUpdateDto memberUpdateDto) throws MemberException {
         Member member = getCurrentMember();
 
         memberUpdateDto.getNickname().ifPresent(member::updateNickname);
     }
 
     @Override
-    public void updatePassword(String checkPassword, String toBePassword) throws Exception {
+    public void updatePassword(String checkPassword, String toBePassword) throws MemberException {
         Member member = getCurrentMember();
 
         if(!member.matchPassword(passwordEncoder, checkPassword)){
-            throw new Exception("비밀번호가 일치하지 않습니다.");
+            throw  new MemberException(MemberExceptionType.WRONG_PASSWORD);
         }
 
         member.updatePassword(passwordEncoder, toBePassword);
     }
 
     @Override
-    public void withdraw(String checkPassword) throws Exception {
+    public void withdraw(String checkPassword) throws MemberException {
         Member member = getCurrentMember();
 
         if(!member.matchPassword(passwordEncoder, checkPassword)){
-            throw new Exception("비밀번호가 일치하지 않습니다.");
+            throw new MemberException(MemberExceptionType.WRONG_PASSWORD);
         }
 
         memberRepository.delete(member);
     }
 
     @Override
-    public MemberInfoDto getInfo(Long id) throws Exception {
+    public MemberInfoDto getInfo(Long id) throws MemberException {
         Member member = memberRepository.findById(id)
-                .orElseThrow(() -> new Exception("회원이 존재하지 않습니다."));
+                .orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
         return new MemberInfoDto(member);
     }
 
     @Override
-    public MemberInfoDto getMyInfo() throws Exception {
+    public MemberInfoDto getMyInfo() throws MemberException {
         return new MemberInfoDto(getCurrentMember());
     }
 
-    private Member getCurrentMember() throws Exception{
+    private Member getCurrentMember() throws MemberException{
         return memberRepository.findByUsername(SecurityUtil.getLoginUsername())
-                .orElseThrow(() -> new Exception("회원이 존재하지 않습니다."));
+                .orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
     }
 
 }

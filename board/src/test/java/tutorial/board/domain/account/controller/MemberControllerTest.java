@@ -197,7 +197,7 @@ class MemberControllerTest {
                                 .header(accessHeader,BEARER+accessToken)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(updatePassword))
-                .andExpect(status().isOk()); // TODO
+                .andExpect(status().isBadRequest());
 
         //then
         Member member = memberRepository.findByUsername(username).orElseThrow(() -> new Exception("회원이 없습니다"));
@@ -245,14 +245,14 @@ class MemberControllerTest {
         Map<String, Object> map = new HashMap<>();
         map.put("checkPassword",password);
 
-        String updatePassword = objectMapper.writeValueAsString(map);
+        String withdrawData = objectMapper.writeValueAsString(map);
 
         //when
         mockMvc.perform(
                         delete("/member")
                                 .header(accessHeader,BEARER+accessToken)
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content(updatePassword))
+                                .content(withdrawData))
                 .andExpect(status().isOk());
 
         //then
@@ -278,7 +278,7 @@ class MemberControllerTest {
                                 .header(accessHeader,BEARER+accessToken)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(updatePassword))
-                .andExpect(status().isOk()); // TODO
+                .andExpect(status().isBadRequest());
 
         //then
         Member member = memberRepository.findByUsername(username).orElseThrow(() -> new Exception("회원이 없습니다"));
