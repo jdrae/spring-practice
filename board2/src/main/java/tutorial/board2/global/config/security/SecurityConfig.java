@@ -22,7 +22,9 @@ public class SecurityConfig {
 
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
-        return (web) -> web.ignoring().antMatchers("/exception/**");
+        return (web) -> web.ignoring().antMatchers(
+                "/exception/**",
+                "/swagger-ui/**", "/swagger-resources/**","/v3/api-docs/**");
     }
 
     @Bean
@@ -35,6 +37,7 @@ public class SecurityConfig {
 
                 .and()
                 .authorizeRequests()
+                    .antMatchers(HttpMethod.POST, "/api/sign-in", "/api/sign-up",  "/api/refresh-token").permitAll()
                     .antMatchers(HttpMethod.POST, "/api/sign-in/", "/api/sign-up/",  "/api/refresh-token/").permitAll()
                     .antMatchers(HttpMethod.GET, "/api/**").permitAll()
                     // "@<빈이름>.<메소드명>(<인자>)"
