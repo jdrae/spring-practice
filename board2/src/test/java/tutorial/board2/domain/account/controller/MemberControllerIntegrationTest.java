@@ -116,7 +116,7 @@ public class MemberControllerIntegrationTest {
         mockMvc.perform(
                         delete("/api/members/{id}", member.getId()).header("Authorization", signInRes.getRefreshToken()))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/exception/access-denied"));
+                .andExpect(redirectedUrl("/exception/entry-point")); // 리프레시로 요청하면 애초에 사용자 정보가 등록이 안됨. 인증 실패.
     }
 
 }

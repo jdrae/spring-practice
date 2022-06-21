@@ -14,7 +14,7 @@ public class MemberGuard {
 
     public boolean check(Long id){
         return authHelper.isAuthenticated()         // 인증되었는지
-                && authHelper.isAccessTokenType()   // access 토큰이 있는지
+//                && authHelper.isAccessTokenType()   // access 토큰이 있는지 확인할 필요 없음. refresh 로 접근 불가.
                 && hasAuthority(id);                // 자원 접근 권한이 있는지
     }
 

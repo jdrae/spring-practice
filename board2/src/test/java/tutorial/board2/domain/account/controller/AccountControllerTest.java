@@ -20,6 +20,7 @@ import static org.mockito.BDDMockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static tutorial.board2.factory.dto.SignInResponseFactory.*;
 
 @ExtendWith(MockitoExtension.class)
 class AccountControllerTest {
@@ -79,5 +80,19 @@ class AccountControllerTest {
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.result").doesNotExist());
 
+    }
+
+
+    @Test
+    void refreshTokenTest() throws Exception {
+        // given
+        given(accountService.refreshAccessToken("refreshToken")).willReturn(createRefreshTokenResponse("accessToken"));
+
+        // when, then
+        mockMvc.perform(
+                        post("/api/refresh-token")
+                                .header("Authorization", "refreshToken"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.result.data.accessToken").value("accessToken"));
     }
 }

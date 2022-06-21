@@ -40,6 +40,6 @@ public class JwtHandler {
     }
 
     private String untype(String token){
-        return token.substring(BEARER.length());
+        return token.substring(BEARER.length()); // TODO: BEARER 없이 보내기
     }
 }

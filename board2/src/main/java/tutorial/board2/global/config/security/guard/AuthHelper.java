@@ -31,16 +31,6 @@ public class AuthHelper {
                 .collect(Collectors.toSet());
     }
 
-    public boolean isAccessTokenType(){
-        // 인증되지 않은 사용자도 AnonymousAuthenticationToken 을 발급받기 때문에
-        // 직접 지정한 CustomAuthenticationToken 의 인스턴스만 인증된 것으로 판별.
-        return "access".equals(((CustomAuthenticationToken) getAuthentication()).getType());
-    }
-
-    public boolean isRefreshTokenType(){
-        return "refresh".equals(((CustomAuthenticationToken) getAuthentication()).getType());
-    }
-
     //== helper ==//
     private CustomUserDetails getUserDetails(){
         return (CustomUserDetails) getAuthentication().getPrincipal();

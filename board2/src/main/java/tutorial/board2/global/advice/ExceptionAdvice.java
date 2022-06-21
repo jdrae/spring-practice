@@ -3,6 +3,7 @@ package tutorial.board2.global.advice;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingRequestHeaderException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -45,12 +46,20 @@ public class ExceptionAdvice {
         return Response.failure(-1003, e.getBindingResult().getFieldError().getDefaultMessage());
     }
 
+    //== 로그인 예외 ==//
     @ExceptionHandler(LoginFailureException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public Response loginFailureException() {
         return Response.failure(-1004, "로그인에 실패하였습니다.");
     }
 
+    @ExceptionHandler(MissingRequestHeaderException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Response missingRequestHeaderException(MissingRequestHeaderException e) {
+        return Response.failure(-1009, e.getHeaderName() + " 요청 헤더가 누락되었습니다.");
+    }
+
+    //== 회원가입 예외 ==//
     @ExceptionHandler(MemberNicknameAlreadyExistsException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
     public Response memberNicknameAlreadyExistsException(MemberNicknameAlreadyExistsException e) {

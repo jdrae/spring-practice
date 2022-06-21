@@ -1,13 +1,14 @@
 package tutorial.board2.domain.account.service;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import tutorial.board2.domain.account.Role;
 import tutorial.board2.domain.account.RoleType;
+import tutorial.board2.domain.account.dto.RefreshTokenResponse;
 import tutorial.board2.domain.account.dto.SignInRequest;
 import tutorial.board2.domain.account.dto.SignInResponse;
 import tutorial.board2.domain.account.dto.SignUpRequest;
@@ -17,6 +18,8 @@ import tutorial.board2.domain.account.exception.MemberUsernameAlreadyExistsExcep
 import tutorial.board2.domain.account.exception.RoleNotFoundException;
 import tutorial.board2.domain.account.repository.MemberRepository;
 import tutorial.board2.domain.account.repository.RoleRepository;
+import tutorial.board2.global.config.token.TokenHelper;
+import tutorial.board2.global.exception.AuthenticationEntryPointException;
 
 import java.util.Optional;
 
@@ -26,16 +29,24 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
+import static tutorial.board2.factory.dto.SignUpRequestFactory.createSignUpRequest;
 import static tutorial.board2.factory.entity.MemberFactory.createMember;
 
 @ExtendWith(MockitoExtension.class)
 public class AccountServiceTest {
 
-    @InjectMocks AccountService accountService;
+    AccountService accountService;
     @Mock MemberRepository memberRepository;
     @Mock RoleRepository roleRepository;
     @Mock PasswordEncoder passwordEncoder;
-    @Mock TokenService tokenService;
+    @Mock TokenHelper accessTokenHelper;
+    @Mock TokenHelper refreshTokenHelper;
+
+    @BeforeEach
+    void beforeEach() {
+        // @InjectMocks 로는 Mockito 가 동일한 타입의 빈을 인식을 못하기때문에 직접 주입
+        accountService = new AccountService(memberRepository, roleRepository, passwordEncoder, accessTokenHelper, refreshTokenHelper);
+    }
 
     /*
     * 회원가입
@@ -93,8 +104,8 @@ public class AccountServiceTest {
         // given
         given(memberRepository.findByUsername(any())).willReturn(Optional.of(createMember()));
         given(passwordEncoder.matches(anyString(), anyString())).willReturn(true);
-        given(tokenService.createAccessToken(anyString())).willReturn("access");
-        given(tokenService.createRefreshToken(anyString())).willReturn("refresh");
+        given(accessTokenHelper.createToken(anyString())).willReturn("access");
+        given(refreshTokenHelper.createToken(anyString())).willReturn("refresh");
 
         // when
         SignInResponse res = accountService.signIn(new SignInRequest("username", "password"));
@@ -125,9 +136,32 @@ public class AccountServiceTest {
                 .isInstanceOf(LoginFailureException.class);
     }
 
+    //== refresh token test==//
+    @Test
+    void refreshTokenTest() {
+        // given
+        String refreshToken = "refreshToken";
+        String subject = "subject";
+        String accessToken = "accessToken";
+        given(refreshTokenHelper.validate(refreshToken)).willReturn(true);
+        given(refreshTokenHelper.extractSubject(refreshToken)).willReturn(subject);
+        given(accessTokenHelper.createToken(subject)).willReturn(accessToken);
 
-    private SignUpRequest createSignUpRequest() {
-        return new SignUpRequest("username", "password", "nickname");
+        // when
+        RefreshTokenResponse res = accountService.refreshAccessToken(refreshToken);
+
+        // then
+        assertThat(res.getAccessToken()).isEqualTo(accessToken);
     }
 
+    @Test
+    void refreshTokenExceptionByInvalidTokenTest() {
+        // given
+        String refreshToken = "refreshToken";
+        given(refreshTokenHelper.validate(refreshToken)).willReturn(false);
+
+        // when, then
+        assertThatThrownBy(() -> accountService.refreshAccessToken(refreshToken))
+                .isInstanceOf(AuthenticationEntryPointException.class);
+    }
 }

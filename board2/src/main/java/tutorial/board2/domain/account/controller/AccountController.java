@@ -22,7 +22,7 @@ public class AccountController {
     @PostMapping("/sign-up")
     @ResponseStatus(HttpStatus.CREATED)
     public Response signUp(@Valid @RequestBody SignUpRequest req){
-        log.debug("회원가입 요청");
+        log.info("회원가입 요청");
         accountService.signUp(req);
         return Response.success();
     }
@@ -31,5 +31,13 @@ public class AccountController {
     @ResponseStatus(HttpStatus.OK)
     public Response signIn(@Valid @RequestBody SignInRequest req){
         return Response.success(accountService.signIn(req));
+    }
+
+    //== refresh token ==//
+    @PostMapping("/refresh-token")
+    @ResponseStatus(HttpStatus.OK)
+    public Response refreshToken(@RequestHeader(value = "Authorization") String refreshToken) {
+        // 기본 required = true 기 때문에 없으면 MissingRequestHeaderException 예외 발생
+        return Response.success(accountService.refreshAccessToken(refreshToken));
     }
 }
