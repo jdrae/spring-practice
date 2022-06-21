@@ -1,4 +1,4 @@
-package tutorial.board2.global.advice;
+package tutorial.board2.domain.account.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -10,13 +10,13 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import tutorial.board2.domain.account.controller.AccountController;
 import tutorial.board2.domain.account.dto.SignInRequest;
 import tutorial.board2.domain.account.dto.SignUpRequest;
 import tutorial.board2.domain.account.exception.LoginFailureException;
 import tutorial.board2.domain.account.exception.MemberNicknameAlreadyExistsException;
 import tutorial.board2.domain.account.exception.RoleNotFoundException;
 import tutorial.board2.domain.account.service.AccountService;
+import tutorial.board2.global.advice.ExceptionAdvice;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
@@ -25,7 +25,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class)
-class ExceptionAdviceTest {
+class AccountControllerAdviceTest {
     @InjectMocks AccountController accountController;
     @Mock AccountService accountService;
     MockMvc mockMvc;
