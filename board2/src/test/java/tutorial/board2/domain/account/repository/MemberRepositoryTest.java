@@ -17,9 +17,10 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static tutorial.board2.factory.entity.MemberFactory.createMember;
+import static tutorial.board2.factory.entity.MemberFactory.createMemberWithRoles;
 
 @SpringBootTest
 @Transactional
@@ -168,18 +169,6 @@ class MemberRepositoryTest {
     private void clear() {
         em.flush();
         em.clear();
-    }
-
-    private Member createMemberWithRoles(List<Role> roles) {
-        return new Member("username", "password", "nickname", roles);
-    }
-
-    private Member createMember(String password, String username, String nickname) {
-        return new Member(username, password, nickname, emptyList());
-    }
-
-    private Member createMember() {
-        return new Member("username", "password", "nickname", emptyList());
     }
 
 }

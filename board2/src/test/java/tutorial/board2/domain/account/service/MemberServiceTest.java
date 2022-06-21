@@ -10,7 +10,6 @@ import tutorial.board2.domain.account.dto.MemberDto;
 import tutorial.board2.domain.account.exception.MemberNotFoundException;
 import tutorial.board2.domain.account.repository.MemberRepository;
 
-import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -19,6 +18,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
+import static tutorial.board2.factory.entity.MemberFactory.createMember;
 
 @ExtendWith(MockitoExtension.class)
 class MemberServiceTest {
@@ -69,8 +69,4 @@ class MemberServiceTest {
         assertThatThrownBy(() -> memberService.delete(1L)).isInstanceOf(MemberNotFoundException.class);
     }
 
-
-    private Member createMember() {
-        return new Member("username", "123456a!", "nickname", List.of());
-    }
 }

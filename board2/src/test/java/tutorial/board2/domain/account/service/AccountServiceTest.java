@@ -6,7 +6,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import tutorial.board2.domain.account.Member;
 import tutorial.board2.domain.account.Role;
 import tutorial.board2.domain.account.RoleType;
 import tutorial.board2.domain.account.dto.SignInRequest;
@@ -21,13 +20,13 @@ import tutorial.board2.domain.account.repository.RoleRepository;
 
 import java.util.Optional;
 
-import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
+import static tutorial.board2.factory.entity.MemberFactory.createMember;
 
 @ExtendWith(MockitoExtension.class)
 public class AccountServiceTest {
@@ -129,10 +128,6 @@ public class AccountServiceTest {
 
     private SignUpRequest createSignUpRequest() {
         return new SignUpRequest("username", "password", "nickname");
-    }
-
-    private Member createMember() {
-        return new Member( "username",  "password","nickname", emptyList());
     }
 
 }
