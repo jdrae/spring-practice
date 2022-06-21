@@ -1,6 +1,7 @@
 package tutorial.board2.domain.account.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,6 +18,7 @@ import tutorial.board2.domain.account.exception.RoleNotFoundException;
 import tutorial.board2.domain.account.repository.MemberRepository;
 import tutorial.board2.domain.account.repository.RoleRepository;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -30,6 +32,7 @@ public class AccountService {
     @Transactional
     public void signUp(SignUpRequest dto){
         validateSignUpInfo(dto);
+        log.debug("회원가입 검증 통과");
         memberRepository.save(SignUpRequest.toEntity(dto, getRole(), passwordEncoder));
     }
 
@@ -50,6 +53,7 @@ public class AccountService {
     }
 
     private void validateSignUpInfo(SignUpRequest dto){
+        log.debug("회원가입 검증");
         if (memberRepository.existsByUsername(dto.getUsername()))
             throw new MemberUsernameAlreadyExistsException(dto.getUsername());
         if (memberRepository.existsByNickname(dto.getNickname()))

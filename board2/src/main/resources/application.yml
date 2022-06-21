@@ -1,5 +1,6 @@
 spring:
   profiles:
+    active: local
     include: jwt # application-jwt
 
   datasource:
@@ -25,5 +26,6 @@ logging:
     org.hibernate.SQL: debug
     org.hibernate.type: debug
     org.springframework.boot.autoconfigure: info
+    logging.level.org.springframework.web: trace
     org.apache.coyote.http11: debug
     tutorial.board2: debug
