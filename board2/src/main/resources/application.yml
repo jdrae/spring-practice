@@ -3,6 +3,10 @@ spring:
     active: local
     include: jwt # application-jwt
 
+  messages:
+    basename: i18n/exception,i18n/validation
+    encoding: UTF-8
+
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/db_example?allowPublicKeyRetrieval=true&useSSL=false&useUnicode=true&serverTimezone=Asia/Seoul

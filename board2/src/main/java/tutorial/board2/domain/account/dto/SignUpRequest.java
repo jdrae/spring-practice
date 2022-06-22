@@ -1,7 +1,6 @@
 package tutorial.board2.domain.account.dto;
 
 import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -19,20 +18,18 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SignUpRequest {
-    @NotBlank(message = "사용자 이름을 입력해주세요.")
-    @Size(min=2, message = "사용자 이름이 너무 짧습니다.")
-    @Pattern(regexp = "^[A-Za-z가-힣]+$", message = "사용자 이름은 한글 또는 알파벳만 입력해주세요.")
+    @NotBlank(message = "{signUpRequest.username.notBlank}")
+    @Size(min=2, message = "{signUpRequest.username.size}")
+    @Pattern(regexp = "^[A-Za-z가-힣]+$", message = "{signUpRequest.username.pattern}")
     private String username;
 
-    @ApiModelProperty(value = "비밀번호", notes = "비밀번호는 최소 8자리이면서 1개 이상의 알파벳, 숫자, 특수문자를 포함해야합니다.", required = true, example = "123456a!")
-    @NotBlank(message = "비밀번호를 입력해주세요.")
+    @NotBlank(message = "{signUpRequest.password.notBlank}")
     @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*#?&])[A-Za-z\\d@$!%*#?&]{8,}$",
-            message = "비밀번호는 최소 8자리이면서 1개 이상의 알파벳, 숫자, 특수문자를 포함해야합니다.")
-    private String password;
+            message = "{signUpRequest.password.pattern}")    private String password;
 
-    @NotBlank(message = "닉네임을 입력해주세요.")
-    @Size(min=2, message = "닉네임이 너무 짧습니다.")
-    @Pattern(regexp = "^[A-Za-z가-힣]+$", message = "닉네임은 한글 또는 알파벳만 입력해주세요.")
+    @NotBlank(message = "{signUpRequest.nickname.notBlank}")
+    @Size(min=2, message = "{signUpRequest.nickname.size}")
+    @Pattern(regexp = "^[A-Za-z가-힣]+$", message = "{signUpRequest.nickname.pattern}")
     private String nickname;
 
     public static Member toEntity(SignUpRequest dto, Role role, PasswordEncoder encoder){

@@ -12,9 +12,9 @@ import javax.validation.constraints.NotBlank;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SignInRequest {
-    @NotBlank(message = "아이디를 입력해주세요.")
+    @NotBlank(message = "{signInRequest.username.notBlank}")
     private String username;
 
-    @NotBlank(message = "비밀번호를 입력해주세요.")
+    @NotBlank(message = "{signInRequest.password.notBlank}")
     private String password;
 }
