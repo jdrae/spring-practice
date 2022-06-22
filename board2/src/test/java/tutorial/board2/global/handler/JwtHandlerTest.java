@@ -1,8 +1,11 @@
 package tutorial.board2.global.handler;
 
+import io.jsonwebtoken.Claims;
 import org.junit.jupiter.api.Test;
 
 import java.util.Base64;
+import java.util.Map;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -12,72 +15,59 @@ class JwtHandlerTest {
     @Test
     void createTokenTest() {
         // given, when
-        String encodedKey = Base64.getEncoder().encodeToString("myKey".getBytes());
-        String token = createToken(encodedKey, "subject", 60L);
+        String key = "myKey";
+        String token = createToken(key, Map.of(), 60L);
 
         // then
         assertThat(token).contains("Bearer ");
     }
 
     @Test
-    void extractSubjectTest() {
+    void parseTest() {
         // given
-        String encodedKey = Base64.getEncoder().encodeToString("myKey".getBytes());
-        String subject = "subject";
-        String token = createToken(encodedKey, subject, 60L);
+        String key = "key";
+        String value = "value";
+        String token = createToken(key, Map.of(key, value), 60L);
 
         // when
-        String extractedSubject = jwtHandler.extractSubject(encodedKey, token);
+        Claims claims = jwtHandler.parse(key, token).orElseThrow(RuntimeException::new);
 
         // then
-        assertThat(extractedSubject).isEqualTo(subject);
+        assertThat(claims.get(key)).isEqualTo(value);
     }
+
 
     @Test
-    void validateTest() {
+    void parseByInvalidKeyTest() {
         // given
         String encodedKey = Base64.getEncoder().encodeToString("myKey".getBytes());
-        String token = createToken(encodedKey, "subject", 60L);
+        String token = createToken(encodedKey, Map.of(), 60L);
 
         // when
-        boolean isValid = jwtHandler.validate(encodedKey, token);
+        Optional<Claims> claims = jwtHandler.parse("invalidKey", token);
 
         // then
-        assertThat(isValid).isTrue();
+        assertThat(claims).isEmpty();
     }
+
 
     @Test
-    void invalidateByInvalidKeyTest() {
-        // 지정된 key 가 아닌 다른 걸로 validate 하면 안됨
+    void parseByExpiredTokenTest() {
         // given
         String encodedKey = Base64.getEncoder().encodeToString("myKey".getBytes());
-        String token = createToken(encodedKey, "subject", 60L);
+        String token = createToken(encodedKey, Map.of(),0L);
 
         // when
-        boolean isValid = jwtHandler.validate("invalid", token);
+        Optional<Claims> claims = jwtHandler.parse("invalidKey", token);
 
         // then
-        assertThat(isValid).isFalse();
+        assertThat(claims).isEmpty();
     }
 
-    @Test
-    void invalidateByExpiredTokenTest() {
-        // 유효시간 0 초로 하면 생성과 동시에 만료.
-        // given
-        String encodedKey = Base64.getEncoder().encodeToString("myKey".getBytes());
-        String token = createToken(encodedKey, "subject", 0L);
-
-        // when
-        boolean isValid = jwtHandler.validate(encodedKey, token);
-
-        // then
-        assertThat(isValid).isFalse();
-    }
-
-    private String createToken(String encodedKey, String subject, long maxAgeSeconds) {
+    private String createToken(String encodedKey, Map<String, Object> claims, long maxAgeSeconds) {
         return jwtHandler.createToken(
                 encodedKey,
-                subject,
+                claims,
                 maxAgeSeconds);
     }
 }

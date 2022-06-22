@@ -5,20 +5,19 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tutorial.board2.domain.account.Member;
+import tutorial.board2.domain.account.MemberRole;
 import tutorial.board2.domain.account.Role;
 import tutorial.board2.domain.account.RoleType;
 import tutorial.board2.domain.account.dto.RefreshTokenResponse;
 import tutorial.board2.domain.account.dto.SignInRequest;
 import tutorial.board2.domain.account.dto.SignInResponse;
 import tutorial.board2.domain.account.dto.SignUpRequest;
-import tutorial.board2.domain.account.exception.LoginFailureException;
-import tutorial.board2.domain.account.exception.MemberNicknameAlreadyExistsException;
-import tutorial.board2.domain.account.exception.MemberUsernameAlreadyExistsException;
-import tutorial.board2.domain.account.exception.RoleNotFoundException;
+import tutorial.board2.domain.account.exception.*;
 import tutorial.board2.domain.account.repository.MemberRepository;
 import tutorial.board2.domain.account.repository.RoleRepository;
 import tutorial.board2.global.config.token.TokenHelper;
-import tutorial.board2.global.exception.AuthenticationEntryPointException;
+
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -41,9 +40,9 @@ public class AccountService {
         Member member = memberRepository.findByUsername(req.getUsername())
                 .orElseThrow(LoginFailureException::new);
         validatePasword(req, member);
-        String subject = createSubject(member);
-        String accessToken = accessTokenHelper.createToken(subject);
-        String refreshToken = refreshTokenHelper.createToken(subject);
+        TokenHelper.PrivateClaims privateClaims = createPrivateClaims(member);
+        String accessToken = accessTokenHelper.createToken(privateClaims);
+        String refreshToken = refreshTokenHelper.createToken(privateClaims);
         return new SignInResponse(accessToken, refreshToken);
     }
 
@@ -54,17 +53,11 @@ public class AccountService {
         // Member 에서 refresh 토큰을 데이터베이스에 저장을 하지 않기 때문에
         // r 토큰이 탈취당할 경우, access 토큰을 무한정으로 재발급할 수 있다.
         // 따라서 로그인 시 발급받은 리프레시 토큰은 (일주일후) 만료되면 유효하지 않다.
-        validateRefreshToken(rToken);
-        String subject = refreshTokenHelper.extractSubject(rToken);
-        String accessToken = accessTokenHelper.createToken(subject);
+        TokenHelper.PrivateClaims privateClaims = refreshTokenHelper.parse(rToken).orElseThrow(RefreshTokenFailureException::new);
+        String accessToken = accessTokenHelper.createToken(privateClaims);
         return new RefreshTokenResponse(accessToken);
     }
 
-    private void validateRefreshToken(String rToken){
-        if(!refreshTokenHelper.validate(rToken)){
-            throw new AuthenticationEntryPointException();
-        }
-    }
 
     //== helper methods ==//
     private Role getRole() {
@@ -84,8 +77,13 @@ public class AccountService {
         }
     }
 
-    private String createSubject(Member member){
-        return String.valueOf(member.getId());
+    private TokenHelper.PrivateClaims createPrivateClaims(Member member){
+        return new TokenHelper.PrivateClaims(
+                String.valueOf(member.getId()),
+                member.getRoles().stream()
+                        .map(MemberRole::getRole)
+                        .map(Role::getRoleType)
+                        .map(Enum::toString)
+                        .collect(Collectors.toList()));
     }
-
 }

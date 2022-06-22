@@ -1,45 +1,41 @@
 package tutorial.board2.global.handler;
 
-import org.springframework.stereotype.Component;
 import io.jsonwebtoken.*;
+import org.springframework.stereotype.Component;
 
 import java.util.Date;
+import java.util.Map;
+import java.util.Optional;
 
 @Component
 public class JwtHandler {
 
-    private String BEARER = "Bearer ";
+    private String type = "Bearer ";
 
-    public String createToken(String encodedKey, String subject, long maxAgeSeconds){
+    public String createToken(String key, Map<String, Object> privateClaims, long maxAgeSeconds){
         Date now = new Date();
-        return BEARER + Jwts.builder()
-                .setSubject(subject)
+        return type + Jwts.builder()
                 .setIssuedAt(now)
                 .setExpiration(new Date(now.getTime() + maxAgeSeconds * 1000L))
-                .signWith(SignatureAlgorithm.HS256, encodedKey)
+                .addClaims(privateClaims)
+                .signWith(SignatureAlgorithm.HS256, key.getBytes())
                 .compact();
     }
 
-    public String extractSubject(String encodedKey, String token){
-        return parse(encodedKey, token).getBody().getSubject();
-    }
-
-    public boolean validate(String encodedKey, String token){
+    public Optional<Claims> parse(String key, String token){
         try{
-            parse(encodedKey, token);
-            return true;
+            return Optional.of(Jwts.parser()
+                    .setSigningKey(key.getBytes())
+                    .parseClaimsJws(untype(token))
+                    .getBody()
+            );
+
         } catch(JwtException e){
-            return false;
+            return Optional.empty();
         }
     }
 
-    private Jws<Claims> parse(String key, String token){
-        return Jwts.parser()
-                .setSigningKey(key)
-                .parseClaimsJws(untype(token));
-    }
-
     private String untype(String token){
-        return token.substring(BEARER.length()); // TODO: BEARER 없이 보내기
+        return token.substring(type.length()); // TODO: BEARER 없이 보내기
     }
 }

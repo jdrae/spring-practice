@@ -12,15 +12,12 @@ import tutorial.board2.domain.account.dto.RefreshTokenResponse;
 import tutorial.board2.domain.account.dto.SignInRequest;
 import tutorial.board2.domain.account.dto.SignInResponse;
 import tutorial.board2.domain.account.dto.SignUpRequest;
-import tutorial.board2.domain.account.exception.LoginFailureException;
-import tutorial.board2.domain.account.exception.MemberNicknameAlreadyExistsException;
-import tutorial.board2.domain.account.exception.MemberUsernameAlreadyExistsException;
-import tutorial.board2.domain.account.exception.RoleNotFoundException;
+import tutorial.board2.domain.account.exception.*;
 import tutorial.board2.domain.account.repository.MemberRepository;
 import tutorial.board2.domain.account.repository.RoleRepository;
 import tutorial.board2.global.config.token.TokenHelper;
-import tutorial.board2.global.exception.AuthenticationEntryPointException;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -104,8 +101,8 @@ public class AccountServiceTest {
         // given
         given(memberRepository.findByUsername(any())).willReturn(Optional.of(createMember()));
         given(passwordEncoder.matches(anyString(), anyString())).willReturn(true);
-        given(accessTokenHelper.createToken(anyString())).willReturn("access");
-        given(refreshTokenHelper.createToken(anyString())).willReturn("refresh");
+        given(accessTokenHelper.createToken(any())).willReturn("access");
+        given(refreshTokenHelper.createToken(any())).willReturn("refresh");
 
         // when
         SignInResponse res = accountService.signIn(new SignInRequest("username", "password"));
@@ -141,11 +138,9 @@ public class AccountServiceTest {
     void refreshTokenTest() {
         // given
         String refreshToken = "refreshToken";
-        String subject = "subject";
         String accessToken = "accessToken";
-        given(refreshTokenHelper.validate(refreshToken)).willReturn(true);
-        given(refreshTokenHelper.extractSubject(refreshToken)).willReturn(subject);
-        given(accessTokenHelper.createToken(subject)).willReturn(accessToken);
+        given(refreshTokenHelper.parse(refreshToken)).willReturn(Optional.of(new TokenHelper.PrivateClaims("memberId", List.of("ROLE_NORMAL"))));
+        given(accessTokenHelper.createToken(any())).willReturn(accessToken);
 
         // when
         RefreshTokenResponse res = accountService.refreshAccessToken(refreshToken);
@@ -158,10 +153,10 @@ public class AccountServiceTest {
     void refreshTokenExceptionByInvalidTokenTest() {
         // given
         String refreshToken = "refreshToken";
-        given(refreshTokenHelper.validate(refreshToken)).willReturn(false);
+        given(refreshTokenHelper.parse(refreshToken)).willReturn(Optional.empty());
 
         // when, then
         assertThatThrownBy(() -> accountService.refreshAccessToken(refreshToken))
-                .isInstanceOf(AuthenticationEntryPointException.class);
+                .isInstanceOf(RefreshTokenFailureException.class);
     }
 }

@@ -59,6 +59,13 @@ public class ExceptionAdvice {
         return getFailureResponse("missingRequestHeaderException.code", "missingRequestHeaderException.msg");
     }
 
+    @ExceptionHandler(RefreshTokenFailureException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Response refreshTokenFailureException(RefreshTokenFailureException e) {
+        return getFailureResponse("refreshTokenFailureException.code", "refreshTokenFailureException.msg");
+    }
+
+
     //== 회원가입 예외 ==//
     @ExceptionHandler(MemberUsernameAlreadyExistsException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
