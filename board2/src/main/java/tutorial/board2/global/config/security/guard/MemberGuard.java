@@ -4,25 +4,22 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import tutorial.board2.domain.account.RoleType;
 
-import java.util.Set;
+import java.util.List;
 
 @Component
 @RequiredArgsConstructor
-public class MemberGuard {
+public class MemberGuard extends Guard{
 
-    private final AuthHelper authHelper;
+    private List<RoleType> roleTypes = List.of(RoleType.ROLE_ADMIN);
 
-    public boolean check(Long id){
-        return authHelper.isAuthenticated()         // 인증되었는지
-//                && authHelper.isAccessTokenType()   // access 토큰이 있는지 확인할 필요 없음. refresh 로 접근 불가.
-                && hasAuthority(id);                // 자원 접근 권한이 있는지
+    @Override
+    protected List<RoleType> getRoleTypes() {
+        return roleTypes;
     }
 
-    private boolean hasAuthority(Long id) {
-        Long memberId = authHelper.extractMemberId();
-        Set<RoleType> memberRoles = authHelper.extractMemberRoles();
-        return id.equals(memberId) || memberRoles.contains(RoleType.ROLE_ADMIN);
+    @Override
+    protected boolean isResourceOwner(Long id) {
+        return id.equals(AuthHelper.extractMemberId());
     }
-
 
 }

@@ -21,7 +21,6 @@ import tutorial.board2.init.TestInitDB;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -89,8 +88,7 @@ public class MemberControllerIntegrationTest {
         // when, then
         mockMvc.perform(
                         delete("/api/members/{id}", member.getId()))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/exception/entry-point"));
+                .andExpect(status().isUnauthorized());
     }
 
     @Test
@@ -102,8 +100,7 @@ public class MemberControllerIntegrationTest {
         // when, then
         mockMvc.perform(
                         delete("/api/members/{id}", member.getId()).header("Authorization", attackerSignInRes.getAccessToken()))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/exception/access-denied"));
+                .andExpect(status().isForbidden());
     }
 
     @Test
@@ -115,8 +112,7 @@ public class MemberControllerIntegrationTest {
         // when, then
         mockMvc.perform(
                         delete("/api/members/{id}", member.getId()).header("Authorization", signInRes.getRefreshToken()))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/exception/entry-point")); // 리프레시로 요청하면 애초에 사용자 정보가 등록이 안됨. 인증 실패.
+                .andExpect(status().isUnauthorized()); // 리프레시로 요청하면 애초에 사용자 정보가 등록이 안됨. 인증 실패.
     }
 
 }

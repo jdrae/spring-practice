@@ -3,6 +3,7 @@ package tutorial.board2.global.config.security;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
@@ -14,6 +15,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @EnableWebSecurity
 @RequiredArgsConstructor
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
 
     private final CustomUserDetailsService userDetailsService;
@@ -37,9 +39,8 @@ public class SecurityConfig {
                 .authorizeRequests()
                     .antMatchers(HttpMethod.POST, "/api/sign-in", "/api/sign-up",  "/api/refresh-token").permitAll()
                     .antMatchers(HttpMethod.POST, "/api/sign-in/", "/api/sign-up/",  "/api/refresh-token/").permitAll()
+                    .antMatchers(HttpMethod.DELETE, "/api/members/{id}/**").authenticated() // Guard 는 MemberService 에서 확인
                     .antMatchers(HttpMethod.GET, "/api/**").permitAll()
-                    // "@<빈이름>.<메소드명>(<인자>)"
-                    .antMatchers(HttpMethod.DELETE, "/api/members/{id}/**").access("@memberGuard.check(#id)")
                     .anyRequest().hasAnyRole("ADMIN")
 
                 // 핸들러는 컨트롤러 전에 수행되기 때문에, ExceptionAdvice 에서는 예외를 잡지 않는다

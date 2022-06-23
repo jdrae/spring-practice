@@ -2,67 +2,61 @@ package tutorial.board2.global.advice;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.MessageSource;
-import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.MissingRequestHeaderException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import tutorial.board2.domain.account.exception.*;
-import tutorial.board2.global.exception.AccessDeniedException;
-import tutorial.board2.global.exception.AuthenticationEntryPointException;
+import tutorial.board2.global.handler.ResponseHandler;
 import tutorial.board2.global.response.Response;
+
+import static tutorial.board2.global.advice.ExceptionType.*;
 
 @Slf4j
 @RestControllerAdvice
 @RequiredArgsConstructor
 public class ExceptionAdvice {
 
-    private final MessageSource messageSource;
+    private final ResponseHandler responseHandler;
 
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public Response exception(Exception e){
-        return getFailureResponse("exception.code", "exception.msg");
-    }
-
-    @ExceptionHandler(AuthenticationEntryPointException.class)
-    @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    public Response authenticationEntryPoint() {
-        return getFailureResponse("authenticationEntryPoint.code", "authenticationEntryPoint.msg");
+        return getFailureResponse(EXCEPTION);
     }
 
     @ExceptionHandler(AccessDeniedException.class)
     @ResponseStatus(HttpStatus.FORBIDDEN)
     public Response accessDeniedException() {
-        return getFailureResponse("accessDeniedException.code", "accessDeniedException.msg");
+        return getFailureResponse(ACCESS_DENIED_EXCEPTION);
     }
 
     @ExceptionHandler(BindException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Response bindException(BindException e) {
-        return getFailureResponse("bindException.code", "bindException.msg", e.getBindingResult().getFieldError().getDefaultMessage());
+        return getFailureResponse(BIND_EXCEPTION, e.getBindingResult().getFieldError().getDefaultMessage());
     }
 
     //== 로그인 예외 ==//
     @ExceptionHandler(LoginFailureException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public Response loginFailureException() {
-        return getFailureResponse("loginFailureException.code", "loginFailureException.msg");
+        return getFailureResponse(LOGIN_FAILURE_EXCEPTION);
     }
 
     @ExceptionHandler(MissingRequestHeaderException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Response missingRequestHeaderException(MissingRequestHeaderException e) {
-        return getFailureResponse("missingRequestHeaderException.code", "missingRequestHeaderException.msg");
+        return getFailureResponse(MISSING_REQUEST_HEADER_EXCEPTION);
     }
 
     @ExceptionHandler(RefreshTokenFailureException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Response refreshTokenFailureException(RefreshTokenFailureException e) {
-        return getFailureResponse("refreshTokenFailureException.code", "refreshTokenFailureException.msg");
+        return getFailureResponse(REFRESH_TOKEN_FAILURE_EXCEPTION);
     }
 
 
@@ -70,43 +64,33 @@ public class ExceptionAdvice {
     @ExceptionHandler(MemberUsernameAlreadyExistsException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
     public Response memberUsernameAlreadyExistsException(MemberUsernameAlreadyExistsException e) {
-        return getFailureResponse("memberUsernameAlreadyExistsException.code", "memberUsernameAlreadyExistsException.msg");
+        return getFailureResponse(MEMBER_USERNAME_ALREADY_EXISTS_EXCEPTION);
     }
 
     @ExceptionHandler(MemberNicknameAlreadyExistsException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
     public Response memberNicknameAlreadyExistsException(MemberNicknameAlreadyExistsException e) {
-        return getFailureResponse("memberNicknameAlreadyExistsException.code", "memberNicknameAlreadyExistsException.msg");
+        return getFailureResponse(MEMBER_NICKNAME_ALREADY_EXISTS_EXCEPTION);
     }
 
     @ExceptionHandler(MemberNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public Response memberNotFoundException() {
-        return getFailureResponse("memberNotFoundException.code", "memberNotFoundException.msg");
+        return getFailureResponse(MEMBER_NOT_FOUND_EXCEPTION);
     }
 
     @ExceptionHandler(RoleNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public Response roleNotFoundException() {
-        return getFailureResponse("roleNotFoundException.code", "roleNotFoundException.msg");
+        return getFailureResponse(ROLE_NOT_FOUND_EXCEPTION);
     }
 
     //== helper ==//
-    private Response getFailureResponse(String codeKey, String messageKey){
-        log.info("code = {}, msg = {}", getCode(codeKey), getMessage(messageKey, null));
-        return Response.failure(getCode(codeKey), getMessage(messageKey, null));
+    private Response getFailureResponse(ExceptionType exceptionType) {
+        return responseHandler.getFailureResponse(exceptionType);
     }
 
-    private Response getFailureResponse(String codeKey, String messageKey, Object... args){
-        return Response.failure(getCode(codeKey), getMessage(messageKey, args));
-    }
-
-    private Integer getCode(String key){
-        return Integer.valueOf(messageSource.getMessage(key, null, null));
-    }
-
-    private String getMessage(String key, Object... args){
-        // 헤더의 로컬 정보(Accept Language)에 따라 메세지 언어 변경
-        return messageSource.getMessage(key, args, LocaleContextHolder.getLocale());
+    private Response getFailureResponse(ExceptionType exceptionType, Object... args) {
+        return responseHandler.getFailureResponse(exceptionType, args);
     }
 }

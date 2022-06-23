@@ -7,7 +7,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -15,32 +14,30 @@ import tutorial.board2.domain.account.dto.SignInRequest;
 import tutorial.board2.domain.account.dto.SignUpRequest;
 import tutorial.board2.domain.account.exception.LoginFailureException;
 import tutorial.board2.domain.account.exception.MemberNicknameAlreadyExistsException;
+import tutorial.board2.domain.account.exception.RefreshTokenFailureException;
 import tutorial.board2.domain.account.exception.RoleNotFoundException;
 import tutorial.board2.domain.account.service.AccountService;
 import tutorial.board2.global.advice.ExceptionAdvice;
-import tutorial.board2.global.exception.AuthenticationEntryPointException;
+import tutorial.board2.global.handler.ResponseHandler;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doThrow;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class)
 class AccountControllerAdviceTest {
     @InjectMocks AccountController accountController;
     @Mock AccountService accountService;
+    @Mock ResponseHandler responseHandler;
     MockMvc mockMvc;
     ObjectMapper objectMapper = new ObjectMapper();
 
     @BeforeEach
     void beforeEach() {
-        ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
-        messageSource.setBasenames("i18n/exception");
-        mockMvc = MockMvcBuilders.standaloneSetup(accountController).setControllerAdvice(new ExceptionAdvice(messageSource)).build();
-    }
+        mockMvc = MockMvcBuilders.standaloneSetup(accountController).setControllerAdvice(new ExceptionAdvice(responseHandler)).build();    }
 
     @Test
     void signInLoginFailureExceptionTest() throws Exception {
@@ -114,14 +111,13 @@ class AccountControllerAdviceTest {
     @Test
     void refreshTokenAuthenticationEntryPointException() throws Exception {
         // given
-        given(accountService.refreshAccessToken(anyString())).willThrow(AuthenticationEntryPointException.class);
+        given(accountService.refreshAccessToken(anyString())).willThrow(RefreshTokenFailureException.class);
 
         // when, then
         mockMvc.perform(
                         post("/api/refresh-token")
                                 .header("Authorization", "refreshToken"))
-                .andExpect(status().isUnauthorized())
-                .andExpect(jsonPath("$.code").value(-1001));
+                .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -129,7 +125,6 @@ class AccountControllerAdviceTest {
         // given, when, then
         mockMvc.perform(
                         post("/api/refresh-token"))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.code").value(-1009));
+                .andExpect(status().isBadRequest());
     }
 }

@@ -17,6 +17,7 @@ import tutorial.board2.domain.account.repository.MemberRepository;
 import tutorial.board2.domain.account.repository.RoleRepository;
 import tutorial.board2.global.config.token.TokenHelper;
 
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
@@ -32,7 +33,7 @@ public class AccountService {
     @Transactional
     public void signUp(SignUpRequest dto){
         validateSignUpInfo(dto);
-        memberRepository.save(SignUpRequest.toEntity(dto, getRole(), passwordEncoder));
+        memberRepository.save(memberFromSignUpRequest(dto));
     }
 
     @Transactional(readOnly = true)
@@ -85,5 +86,9 @@ public class AccountService {
                         .map(Role::getRoleType)
                         .map(Enum::toString)
                         .collect(Collectors.toList()));
+    }
+
+    public Member memberFromSignUpRequest(SignUpRequest dto){
+        return new Member(dto.getUsername(), passwordEncoder.encode(dto.getPassword()), dto.getNickname(), List.of(getRole()));
     }
 }

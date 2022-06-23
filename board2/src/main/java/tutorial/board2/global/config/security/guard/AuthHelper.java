@@ -14,16 +14,16 @@ import java.util.stream.Collectors;
 @Component
 public class AuthHelper {
 
-    public boolean isAuthenticated(){
+    public static boolean isAuthenticated(){
         return getAuthentication() instanceof CustomAuthenticationToken &&
                 getAuthentication().isAuthenticated();
     }
 
-    public Long extractMemberId(){
+    public static Long extractMemberId(){
         return Long.valueOf(getUserDetails().getUserId());
     }
 
-    public Set<RoleType> extractMemberRoles(){
+    public static Set<RoleType> extractMemberRoles(){
         return getUserDetails().getAuthorities()
                 .stream()
                 .map(GrantedAuthority::getAuthority)
@@ -32,11 +32,11 @@ public class AuthHelper {
     }
 
     //== helper ==//
-    private CustomUserDetails getUserDetails(){
+    private static CustomUserDetails getUserDetails(){
         return (CustomUserDetails) getAuthentication().getPrincipal();
     }
 
-    private Authentication getAuthentication(){
+    private static Authentication getAuthentication(){
         // 현재 콘텍스트에서 인증된 유저 정보 가져옴
         // ThreadLocal 을 이용하여 관리하는데, 같은 스래드 내에서는 데이터를 공유할 수 있음.
         // JwtAuthenticationFilter 에서 ThreadLocal 에 사용자 정보를 저장하게 됨.

@@ -4,14 +4,10 @@ import io.swagger.annotations.ApiModel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import tutorial.board2.domain.account.Member;
-import tutorial.board2.domain.account.Role;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
-import java.util.List;
 
 @ApiModel(value = "회원가입 요청")
 @Data
@@ -32,7 +28,4 @@ public class SignUpRequest {
     @Pattern(regexp = "^[A-Za-z가-힣]+$", message = "{signUpRequest.nickname.pattern}")
     private String nickname;
 
-    public static Member toEntity(SignUpRequest dto, Role role, PasswordEncoder encoder){
-        return new Member(dto.username, encoder.encode(dto.password), dto.nickname, List.of(role));
-    }
 }
